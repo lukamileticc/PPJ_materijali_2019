@@ -1,0 +1,19 @@
+ 
+# modifikovani prikaz sadrzaja direktorijuma
+# poziv sed-u bez prosirenih regex, pa sve zagrade da bi imale specijalno znacenje moraju da budu u eskejp sekvenci.
+ ls|egrep 'p1[0-9]\{2\}\.pdf' | sed 's/p1\([0-9]\{2\}\)\.pdf/p1_praktikum_\1\.pdf/'
+
+ 
+# postizanje konjukcije dva uslova za regularni izraz sa grep-om
+ 
+egrep '[0-9]+' 2.txt | grep '[a-z]+' | grep '.' 
+ 
+# izdvajanje studenata iz datoteke nastava.html
+# -n je opcija grepa kojom se ispisuje redni broj linije u kojoj je pronadjeno poklapanje
+ # U tekstu zamene za sed posablonima (backreference ) 1-9 moze da se pristupa sa \1 do \9, a & se odnosi na tekst prepoznat celim regexom
+
+cat nastava.html | egrep   '<td>[A-Z a-z]*</td><td>[0-9/]*</td>' | sed -r 's/[ \t]*<td>([A-Za-z ]*)<\/td><td>([0-9]{1,3})\/[0-9]{2}([0-9]{2})<\/td>.*/\1 mi\3\2 /' |sort|egrep -n ".*" | sed -r 's/(.*):(.*)/\1. \2/' >studenti.txt
+
+# Kada pretrazujemo vise fajlova isto struktuiranih
+# -h u grepu je opcija sa kojom grep ne prikazuje ime fajla u cijoj liniji je nasao uparivanje sa regularnim izrazom
+egrep -h  '<td>[A-Z a-z]*</td><td>[0-9/]*</td>' *.html | sed -r 's/[ \t]*<td>([A-Za-z ]*)<\/td><td>([0-9]{1,3})\/[0-9]{2}([0-9]{2})<\/td>.*/\1 mi\3\2 /' |sort|egrep -n ".*" | sed -r 's/(.*):(.*)/\1. \2/' >studenti.txt

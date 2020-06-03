@@ -1,0 +1,165 @@
+%{
+#include <iostream>
+#include <cstdlib>
+#include <string>
+#include <vector>
+#include <map>
+#include <algorithm>
+#include <cmath>
+using namespace std;
+
+void yyerror(string s);
+extern int yylex();
+
+map<string ,vector<int>*> promenljive;
+
+void ispisi(vector<int>* v1){
+	
+	cout << "<";
+	for(int i = 0; i < v1->size(); i++){
+		cout << (*v1)[i];
+		if(i != v1->size()-1)
+			cout << ", ";
+	}
+	cout << ">" << endl;
+}
+vector<int>* saberi(vector<int>* v1 , vector<int>* v2){
+	
+	vector<int> novi (v1->size());
+	for(int i = 0; i < novi.size();i++)
+		novi[i] = ((*v1)[i] + (*v2)[i]);
+
+	return new vector<int>(novi);
+}
+vector<int>* oduzmi(vector<int>* v1 , vector<int>* v2){
+
+	vector<int> novi (v1->size());
+	for(int i = 0; i < novi.size();i++)
+		novi[i] = ((*v1)[i] - (*v2)[i]);
+
+	return new vector<int>(novi);
+}
+vector<int>* pomnozi_skalarom(vector<int>* v1, int skalar){
+
+		vector<int>* novi = new vector<int>(*v1);
+		for(int i = 0; i < v1->size();i++)
+			(*novi)[i] *= skalar;
+
+	return novi;
+}
+int skalarni_proizvod(vector<int>* v1,vector<int>* v2){
+	
+	int rez = 0;
+	for(int i = 0; i < v1->size();i++)
+		rez += (*v1)[i] * (*v2)[i];
+
+
+	return rez;
+}
+
+double norma(vector<int>* v1){
+	
+	int skalarni = skalarni_proizvod(v1,v1);
+	return sqrt(skalarni);
+}
+
+double ugao(vector<int>* v1,vector<int>* v2){
+	//skalarni prozivod;
+	double skalar = skalarni_proizvod(v1,v2);
+	double norma_1 = norma(v1);
+	double norma_2 = norma(v2);
+	//skalar = norma1*norma2 * kosinus
+	double kosinus = skalar*1.0 / (norma_1*norma_2);
+	return acos(kosinus);
+	
+}
+bool jednaki(vector<int>* v1,vector<int>* v2){
+
+	if(v1->size() != v2->size())
+		return false;
+	
+	//ako su paralelni za ovo nisam siguran
+	if(ugao(v1,v2) == 0)
+		return true;
+	else
+		return false;
+}
+%}
+%union{
+	string* ime; //za ime id
+	std::vector<int>* niz;
+	int vrednost;
+}
+//asocijativnost
+%left '+' '-'
+%left '*'
+
+%token<vrednost> BROJ
+%type<niz> nabrajanje izraz
+%token<ime> ID
+%token DOD PRINT UGAO EQV
+
+%start program
+%%
+//gramatika
+program: program naredba ';' {}
+		| naredba ';'  {}
+		;
+naredba: ID DOD izraz    { auto it = promenljive.find(*$1);
+							if(it != promenljive.end())
+								delete it->second;
+							promenljive[*$1] = $3;
+							delete $1;
+						 }
+		| PRINT '(' izraz ')'{ ispisi($3);}
+		| izraz '.' izraz { if($1->size() != $3->size())
+								yyerror("Greska u dimenzionalnosti!");
+							cout << skalarni_proizvod($1,$3) << endl; 
+							delete $1; delete $3;}
+		| '|' izraz '|' { cout << norma($2) << endl; delete $2;}
+		| UGAO '(' izraz ',' izraz ')' { cout << ugao($3,$5) << endl;}
+		| EQV '(' izraz ',' izraz ')' { if(jednaki($3,$5)) cout << "True" << endl;
+										else cout << "False" << endl;
+										
+										delete $3;
+										delete $5;
+									  }
+		;
+izraz: izraz '+' izraz   {  if($1->size() != $3->size())
+								yyerror("greska u dimenzionalnosti vektora");
+							$$ = saberi($1,$3);
+							delete $1; delete $3;
+						 }
+	  | izraz '-' izraz  {  if($1->size() != $3->size())
+								yyerror("greska u dimenzionalnosti vektora");
+							$$ = oduzmi($1,$3);
+							delete $1; delete $3;
+						 }
+	  | BROJ '*' izraz		{ $$ = pomnozi_skalarom($3,$1);}  
+	  | ID   				{ auto it = promenljive.find(*$1);
+							  if(it == promenljive.end())
+								yyerror(*$1 + " promenljiva nije definisana!");
+
+							 $$ = new vector<int>(*(it->second));
+								delete $1;
+							}
+	  | '<' nabrajanje '>'  { $$ = $2;}
+	  ;
+nabrajanje: nabrajanje ',' BROJ  {$1->push_back($3); $$ = $1;}
+		  | BROJ			  { $$ = new vector<int>(); $$->push_back($1);}
+		  ;
+
+%%
+int main() {
+
+	if(yyparse() == 0)
+		cout << "All ok" << endl;
+	else
+		yyerror("sintaksna greska()");
+
+	return 0;
+}
+void yyerror(string s){
+	cerr << s << endl;
+	exit(EXIT_FAILURE);
+}

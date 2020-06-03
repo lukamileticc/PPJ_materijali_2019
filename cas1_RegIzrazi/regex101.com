@@ -1,0 +1,2 @@
+NAPOMENA:
+VEZBANJE REG IZRAZA U https://regex101.com/

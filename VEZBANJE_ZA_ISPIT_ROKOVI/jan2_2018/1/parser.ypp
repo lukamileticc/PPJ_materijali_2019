@@ -1,0 +1,135 @@
+%{
+#include "formula.hpp"
+#include <iostream>
+#include <string>
+#include <cstdlib>
+#include <string>
+#include <vector>
+#include <map>
+using namespace std;
+
+void yyerror(string s);
+extern int yylex();
+
+map<string,formula*> promenljive;
+map<string,vector<int>*> liste;
+
+%}
+
+%union{
+	vector<int>* elementi; 
+	string* ime_liste;
+	string* ime;
+	formula* formula_tip;
+	int vrednost;
+}
+
+//asoc //proveriti naknadno
+%left I
+%left ILI
+%left IMPL
+%left EQV
+%right NOT
+
+%type<elementi> lista_izraz nabrajanje
+%type<formula_tip> izraz 
+%token<ime_liste> L_ID
+%token<ime> ID
+%token<vrednost> BROJ
+%token DOD TRUE_TOKEN FALSE_TOKEN UNDEF_TOKEN HEAD TAIL
+%start program
+%%
+//gramatika
+program : program naredba '\n' {}
+		| naredba '\n' {}
+		;
+naredba : izraz	 { cout << $1->ispisi() << endl;
+				 }
+		| ID DOD izraz  { auto it = promenljive.find(*$1);
+						  if(it != promenljive.end())
+							 delete it->second;
+							
+						  promenljive[*$1] = $3;
+							delete $1;
+						}
+		| L_ID DOD lista_izraz { auto it = liste.find(*$1);
+								 if(it != liste.end())
+									delete it->second;
+								
+								 liste[*$1] = $3;
+								 delete $1;
+								}
+	
+		;
+
+izraz: izraz I izraz   { $$ = new formula(konjukcija(*$1,*$3));
+								delete $1; delete $3;
+						}
+	  | izraz EQV izraz	 { $$ = new formula(ekvivalencija(*$1,*$3));
+								delete $1; delete $3;
+						}
+	  | izraz IMPL izraz { $$ = new formula(implikacija(*$1,*$3));
+								delete $1; delete $3;
+						}
+	  | izraz ILI izraz  { $$ = new formula(disjunkcija(*$1,*$3));
+								delete $1; delete $3;
+						}
+	  | NOT izraz 		{ $$ = new formula($2->negacija());
+							delete $2;
+						}
+	  | '(' izraz ')'  { $$ = $2;}
+	  | ID 				{   auto it = promenljive.find(*$1);
+							if(it== promenljive.end())
+								$$ = new formula(-1);
+							else{
+							$$ = new formula((it->second)->get_value());
+							}
+							delete $1;
+						}
+	  | TRUE_TOKEN { $$ = new formula(1);}
+	  | FALSE_TOKEN { $$ = new formula(0);}	
+	  | UNDEF_TOKEN { $$ = new formula(-1);}
+	  | L_ID '['BROJ ']' { if(liste.find(*$1) == liste.end())
+								yyerror("Lista nije deklarisana");
+							
+							int tmp = (*liste[*$1])[$3];
+							$$ = new formula(tmp);
+						}
+	  | HEAD '(' L_ID ')'  { if(liste.find(*$3) == liste.end())
+									yyerror("Lista ne postoji");
+
+							int tmp = (*liste[*$3])[0];
+							 $$ = new formula(tmp);
+							}
+	  | TAIL '(' L_ID ')' { if(liste.find(*$3) == liste.end())
+									yyerror("Lista ne postoji");
+
+							int duzina = (liste[*$3])->size() -1;
+							int tmp = (*liste[*$3])[duzina];
+							 $$ = new formula(tmp);}
+	  ;
+
+lista_izraz : '[' nabrajanje ']' { $$ = $2;}
+			;
+
+nabrajanje: nabrajanje ',' izraz { $$ =$1; $$->push_back($3->get_value());}
+		   | izraz 	{$$ = new vector<int>();
+					 $$->push_back($1->get_value());
+					}
+			;
+
+%%
+
+int main(){
+
+	if(yyparse() == 0)
+		cout << "All ok" << endl;
+	else
+		yyerror("Sintaksna greska");
+
+	return 0;
+}
+void yyerror(string s){
+	cerr << s << endl;
+	exit(EXIT_FAILURE);
+}

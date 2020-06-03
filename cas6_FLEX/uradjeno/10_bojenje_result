@@ -1,0 +1,31 @@
+<html>
+<head><title>10_bojenje_test.c</title></head>
+<body>
+<pre>
+<span style= "color:green; ">#include &lt;stdio.h&gt
+</span<span style= "color:green; ">#define P 0
+</span<span style= "color:green; ">#define N 1
+</span
+  <span style="color:grey;">/* Glavni program */</span>
+<B>int</B> <span style = " color: black;">main</span>()
+{
+  <B>char</B> <span style = " color: black;">c</span>;
+  <B>int</B> <span style = " color: black;">stanje</span> = <span style = " color: black;">P</span>;
+  <B>int</B> <span style = " color: black;">prelaz</span>[<span style="color:blue;">2</span>][<span style="color:blue;">2</span>] = { {<span style = " color: black;">N</span>, <span style = " color: black;">P</span>}, {<span style = " color: black;">P</span>, <span style = " color: black;">N</span>} };
+  
+  <B>while</B> ((<span style = " color: black;">c</span> = <span style = " color: black;">getchar</span>()) != <span style = " color: black;">EOF</span> && <span style = " color: black;">c</span> != <span style="color:violet;">'\n'</span>) {
+    <B>if</B> (<span style = " color: black;">c</span> != <span style="color:violet;">'0'</span> && <span style = " color: black;">c</span> != <span style="color:violet;">'1'</span>) {
+      <span style = " color: black;">printf</span>(<span style="color:red;">"Greska:%c.\n"</span>, <span style = " color: black;">c</span>);
+      <B>return</B> -<span style="color:blue;">1</span>;
+    }
+    <span style = " color: black;">stanje</span> = <span style = " color: black;">prelaz</span>[<span style = " color: black;">stanje</span>][<span style = " color: black;">c</span> - <span style="color:violet;">'0'</span>];
+  }
+  <B>if</B> (<span style = " color: black;">stanje</span> == <span style = " color: black;">P</span>)
+    <span style = " color: black;">printf</span>(<span style="color:red;">"Prepoznata parna rec.\n\\"</span>);
+  <B>else</B>
+    <span style = " color: black;">printf</span>(<span style="color:red;">"Nije prepoznata parna rec.\n"</span>);
+  <B>return</B> <span style="color:blue;">0</span>;
+}
+</pre>
+</body>
+</html>

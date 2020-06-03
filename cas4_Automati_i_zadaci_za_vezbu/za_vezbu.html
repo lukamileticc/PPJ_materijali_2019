@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- pocetak sadrzaja -->
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1251"></head><body><div id="content">
+	
+	<div>
+	<h2 class="title" style="culor: #649632;">Zadaci za vežbu</h2>
+	</div>
+	
+	<ul>
+		<li> Konstruisati MDKA za sledeće regularne izraze:
+			<ul>
+				<li> a|b* </li>
+				<li> (a+|b)+ba? </li>
+				<li> a*|bab* </li>
+				<li> (a|b+)(a(ab)*|b)+ </li>
+<!--				<li> (ca)+ b(a|b|c)*</li> 
+-->			</ul>
+			koristeći oba algoritma za konstrukciju NKA.
+		</li>
+		<li>
+			Konstruisati minimalni deterministički automat koji odgovara 
+automatu A= (&#931;,Q,I,F,&#916;), &#931;={a,b,c} čija je tablica prelaza sledeća:
+			<table width="200">
+				<tbody><tr> <th> </th> <th>a</th><th>b</th><th>c</th> <th>&#949;</th></tr>
+				<tr> <th>1</th> <td>1</td> <td>/</td> <td>4</td> <td>2</td>   </tr>
+				<tr> <th>2</th> <td>3</td> <td>2</td> <td>/</td> <td>1</td>    </tr>
+				<tr> <th>3</th> <td>/</td> <td>/</td> <td>/</td> <td>2</td>    </tr>
+				<tr> <th>4</th> <td>/</td> <td>3</td> <td>/</td><td>/</td>    </tr>
+			</tbody></table> 
+			i I={1} i F={2}.
+		</li>
+		<li>
+		Konstruisati automat nad azbukom {a,b} koji prepoznaje reči sa bar dva uzastopna pojavljivanja slova a. 
+		Zatim odrediti regularan izraz koji odgovara jeziku prihvaćenim konstruisanim automatom. 
+		</li>
+		<li>
+		Odrediti regularni izraz koji ogovara jeziku konačnog automata opisanog sledećom tablicom prelaza:
+			<table width="200">
+				<tbody><tr> <th></th> <th>0</th><th>1</th></tr>
+				<tr> <th>1</th> <td>2</td> <td>1</td></tr>
+				<tr> <th>2</th> <td>2</td> <td>1,3</td></tr>
+				<tr> <th>3</th> <td>2</td> <td>3</td></tr>
+			</tbody></table> 
+			i I={1}=F.
+		</li>
+	
+	</ul>
+
+	</div>
+	<!-- end #post -->
+
+<!-- end #content --></body></html>

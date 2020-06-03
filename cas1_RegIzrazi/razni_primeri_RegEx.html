@@ -1,0 +1,732 @@
+<html><head>
+
+<style>
+body {
+	FONT-FAMILY : arial; 
+}
+
+TT.regex {
+	BORDER-TOP: #ff6600 1px solid; BORDER-LEFT-WIDTH: 1px; BORDER-LEFT-COLOR: #ff6600; PADDING-BOTTOM: 1px; PADDING-TOP: 1px; BORDER-BOTTOM: #ff6600 1px solid; WHITE-SPACE: nowrap; BACKGROUND-COLOR: #fff4e8; BORDER-RIGHT-WIDTH: 1px; BORDER-RIGHT-COLOR: #ff6600
+}
+TT.match {
+	BORDER-TOP: #0066ff 1px solid; BORDER-LEFT-WIDTH: 1px; BORDER-LEFT-COLOR: #0066ff; PADDING-BOTTOM: 1px; PADDING-TOP: 1px; BORDER-BOTTOM: #0066ff 1px solid; WHITE-SPACE: nowrap; BACKGROUND-COLOR: #e8f4ff; BORDER-RIGHT-WIDTH: 1px; BORDER-RIGHT-COLOR: #0066ff;
+}
+TT.string {
+	BORDER-TOP: #00a000 1px solid; BORDER-LEFT-WIDTH: 1px; BORDER-LEFT-COLOR: #00a000; PADDING-BOTTOM: 1px; PADDING-TOP: 1px; BORDER-BOTTOM: #00a000 1px solid; WHITE-SPACE: nowrap; BACKGROUND-COLOR: #e0ffe0; BORDER-RIGHT-WIDTH: 1px; BORDER-RIGHT-COLOR: #00a000
+}
+TT.code {
+	WHITE-SPACE: nowrap
+}
+td {
+	font-size : 10pt;
+}
+table { 
+	BORDER: 1px solid black; 
+}
+
+td.topic {
+	font-weight : bold
+}
+
+hr {
+	height: 1px;
+}
+</style>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+</head><body>
+<table width="100%" cellspacing="5" cellpadding="3">
+
+<tbody><tr>
+<th>&nbsp;</th><th width="30%">Regularni izraz</th><th width="30%">Prepoznate reči</th><th width="30%">Komentar</th>
+</tr>
+<tr><td colspan="4"><hr></td></tr>
+
+<!-- ----------------------------------------------------------------- -->
+<tr>
+<td class="topic">
+	Doslovne niske
+</td>
+<td>
+	<tt class="regex">Prevodioci i interpretatori</tt>
+</td>
+<td>
+	<tt class="match">Prevodioci i interpretatori</tt>
+</td>
+</tr>
+
+<tr><td colspan="4"><hr></td></tr>
+
+<!-- ----------------------------------------------------------------- -->
+<tr>
+<td class="topic">
+	Alternacija
+</td>
+<td>
+	<tt class="regex">Pascal|Java</tt>
+</td>
+<td>
+	<tt class="match">Pascal</tt>&nbsp;
+	<tt class="match">Java</tt>
+</td>
+</tr>
+<tr><td colspan="4"><hr></td></tr>
+
+<!-- ----------------------------------------------------------------- -->
+<tr>
+<td class="topic">
+	Opciono pojavljivanje
+</td>
+<td>
+	<tt class="regex">izrazi?</tt>
+</td>
+<td>
+	<tt class="match">izraz</tt>&nbsp; 
+	<tt class="match">izrazi</tt>
+</td>
+</tr>
+<tr><td colspan="4"><hr></td></tr>
+
+<!-- ----------------------------------------------------------------- -->
+<tr>
+<td>
+	Engleski nazivi regularnih izraza
+</td>
+<td>
+	<tt class="regex">reg(ular expressions?|ex(p|es)?)</tt></td>
+<td>
+	<tt class="match">regular expression</tt><p>
+	<tt class="match">regular expressions</tt> </p><p>
+	<tt class="match">regex</tt>&nbsp;
+	<tt class="match">regexp</tt>&nbsp;
+	<tt class="match">regexes</tt>
+</p></td>
+</tr>
+<tr><td colspan="4"><hr></td></tr>
+
+<!-- ----------------------------------------------------------------- -->
+<tr>
+<td class="topic">
+	Ponavljanje
+</td>
+<td>
+	<tt class="regex">ab*c</tt>
+</td>
+<td>
+	<tt class="match">ac</tt>&nbsp;
+	<tt class="match">abc</tt>&nbsp;
+	<tt class="match">abbc</tt>&nbsp; ...
+</td>
+<td>
+Izraz se javlja 0 ili više puta
+</td>
+</tr>
+<tr><td colspan="4"><hr></td></tr>
+
+<!-- ----------------------------------------------------------------- -->
+<tr>
+<td class="topic">
+	Pozitivno ponavljanje
+</td>
+<td>
+	<tt class="regex">ab+c</tt>
+</td>
+<td>
+	<tt class="match">abc</tt>&nbsp;
+	<tt class="match">abbc</tt>&nbsp; ...
+</td>
+<td>
+Izraz se javlja 1 ili više puta
+</td>
+</tr>
+<tr><td colspan="4"><hr></td></tr>
+
+
+<!-- ----------------------------------------------------------------- -->
+<tr>
+<td class="topic" rowspan="4">
+	Prebrojano ponavljanje
+</td>
+<td>
+	<tt class="regex">ab{3}c</tt>
+</td>
+<td>
+	<tt class="match">abbbc</tt>
+</td>
+<td rowspan="4">
+Izraz se javlja navedeni broj puta
+</td>
+</tr>
+
+<tr>
+<td>
+	<tt class="regex">ab{3,5}c</tt>
+</td>
+<td>
+	<tt class="match">abbbc</tt>&nbsp;<tt class="match">abbbbc</tt>&nbsp;<tt class="match">abbbbbc</tt>
+</td>
+</tr>
+
+<tr>
+<td>
+	<tt class="regex">ab{3,}c</tt>
+</td>
+<td>
+	<tt class="match">abbbc</tt>&nbsp;<tt class="match">abbbbc</tt>&nbsp;<tt class="match">abbbbbc</tt>&nbsp;<tt class="match">abbbbbc</tt>...
+</td>
+</tr>
+
+<tr>
+<td>
+	<tt class="regex">ab{,3}c</tt>
+</td>
+<td>
+	<tt class="match">ac</tt>&nbsp;<tt class="match">abc</tt>&nbsp;<tt class="match">abbc</tt>&nbsp;<tt class="match">abbbc</tt>
+</td>
+</tr>
+
+<tr><td colspan="4"><hr></td></tr>
+
+
+<!-- ----------------------------------------------------------------- -->
+<tr>
+<td class="topic" rowspan="2">
+	Karakterske klase
+</td>
+<td>
+	<tt class="regex">[aeiou]</tt>
+</td>
+<td>
+	<tt class="match">a</tt>&nbsp; 
+	<tt class="match">e</tt>&nbsp; 
+	<tt class="match">i</tt>&nbsp;
+	<tt class="match">o</tt>&nbsp; 
+	<tt class="match">u</tt>
+</td>
+<td rowspan="2">Prepoznaje se tačno jedan od karaktera iz klase</td>
+</tr>
+<tr>
+<td>
+	<tt class="regex">[a-zA-Z0-9_]</tt>
+</td>
+<td>
+	<tt class="match">b</tt>&nbsp;
+	<tt class="match">D</tt>&nbsp;
+	<tt class="match">7</tt>&nbsp;
+	<tt class="match">_</tt>
+</td>
+</tr>
+<tr><td colspan="4"><hr></td></tr>
+
+<!-- ----------------------------------------------------------------- -->
+
+<tr>
+<td class="topic">
+	Negirane karakterske klase
+</td>
+<td>
+	<tt class="regex">[^aeiou]</tt>
+</td>
+<td>
+	<tt class="match">b</tt>&nbsp;
+	<tt class="match">c</tt>&nbsp;
+	<tt class="match">d</tt>&nbsp;
+	<tt class="match">f</tt>&nbsp;
+	<tt class="match">8</tt>&nbsp;
+	<tt class="match">{</tt>&nbsp;
+	...
+</td>
+<td>Prepoznaje se tačno jedan karakter koji se ne nalazi u klasi</td>
+</tr>
+<tr><td colspan="4"><hr></td></tr>
+
+<!-- ----------------------------------------------------------------- -->
+
+<tr>
+<td class="topic">
+	Tačkica
+</td>
+<td>
+	<tt class="regex">x.y</tt>
+</td>
+<td>
+	<tt class="match">xfy</tt>&nbsp;
+	<tt class="match">x y</tt>&nbsp;
+	<tt class="match">x;y</tt>
+</td>
+<td>
+	Bilo koji karakter osim prelaska u novi red.
+</td>
+</tr>
+<tr><td colspan="4"><hr></td></tr>
+
+
+
+<!-- ----------------------------------------------------------------- -->
+
+<tr>
+<td class="topic" rowspan="2">
+	Specijalni karakteri
+</td>
+<td>
+	<tt class="regex"> 1\+1=2</tt>
+</td>
+<td>
+	<tt class="match">1+1=2</tt>
+</td>
+<td rowspan="2">
+	Specijalni karakteri su : 
+	<tt class="regex">\[</tt>,
+	<tt class="regex">\\</tt>,
+	<tt class="regex">\^</tt>,
+	<tt class="regex">\$</tt>,
+	<tt class="regex">\.</tt>,
+	<tt class="regex">\|</tt>,
+	<tt class="regex">\?</tt>,
+	<tt class="regex">\*</tt>,
+	<tt class="regex">\+</tt>,
+	<tt class="regex">\(</tt>,
+	<tt class="regex">\)</tt>
+</td></tr>
+<tr>
+<td>
+	<tt class="regex">C:\\My Software\\(C\+\+|C#)\\</tt>
+</td>
+<td>
+	<tt class="match">C:\My Software\C++\</tt><p>
+	<tt class="match">C:\My Software\C#\</tt>
+</p></td>
+</tr>
+<tr><td colspan="4"><hr></td></tr>
+
+<!-- ----------------------------------------------------------------- -->
+<tr>
+<td class="topic">
+	Nevidljivi karakteri
+</td>
+<td>
+	<tt class="regex">a\tb</tt>
+</td>
+<td>
+<pre><tt class="match">a    b</tt></pre>
+</td>
+<td>
+	Nevidljivi karakteri su: 
+	<tt class="regex">\n</tt>,
+	<tt class="regex">\r</tt>,
+	<tt class="regex">\t</tt>,
+	<tt class="regex">\a</tt>,
+	<tt class="regex">\e</tt>,
+	<tt class="regex">\f</tt>,
+	<tt class="regex">\v</tt>
+	<p>ASCII ili ANSI kod: 
+	<tt class="regex">\xA9</tt> 
+	</p><p>UNICODE kod: 
+	<tt class="regex">\u20A0</tt>
+</p></td>
+</tr>
+<tr><td colspan="4"><hr></td></tr>
+
+
+
+
+
+<!-- ----------------------------------------------------------------- -->
+
+<tr>
+<td class="topic">
+	Specijalni karakteri u klasama
+</td>
+<td>
+	<tt class="regex">[]^\\-]</tt>
+</td>
+<td>
+	<tt class="match">]</tt>&nbsp;
+	<tt class="match">^</tt>&nbsp;
+	<tt class="match">\</tt>&nbsp;
+	<tt class="match">-</tt>
+</td>
+<td>
+	Kosa crta <tt class="match">\</tt>: navodi se dvostruko, npr. <tt class="regex">[x\\y]</tt>, <p>
+	Crtica <tt class="match">-</tt>: na početku ili kraju klase ili kao <tt>\-</tt> , npr. <tt class="regex">[-xy]</tt>,  <tt class="regex">[xy-]</tt>, <tt class="regex">[x\-y]</tt></p><p>
+	Kapica <tt class="match">^</tt>: ako nije prvi karakter navodi se obično, a ako je na početku onda kao <tt>\^</tt>, npr. <tt class="regex">[x^y]</tt>, </p><p>
+	Zatvorena zagrada <tt class="match">]</tt>: Ako je prvi karakter (eventualno posle negacije ^) navodi se obično, a inače kao <tt>\]</tt> npr. <tt class="regex">[^]})]</tt>
+</p></td>
+</tr>
+<tr><td colspan="4"><hr></td></tr>
+
+
+<!-- ----------------------------------------------------------------- -->
+
+<tr>
+<td class="topic">
+	Predefinisane klase
+</td>
+<td>
+	<tt class="regex">\d\d\w</tt>
+</td>
+<td>
+	<tt class="match">23a</tt>&nbsp;
+	<tt class="match">39_</tt>&nbsp;
+	<tt class="match">007</tt>
+</td>
+<td>
+	<tt class="match">\w</tt> - karakteri koji se javljaju u rečima, <p>
+	<tt class="match">\d</tt> - cifre, </p><p>
+	<tt class="match">\s</tt> - beline </p><p>
+	Odgovarajuće negirane klase: <tt class="match">\W</tt>, <tt class="match">\D</tt>, <tt class="match">\S</tt>
+</p></td>
+</tr>
+<tr><td colspan="4"><hr></td></tr>
+
+
+<!-- ----------------------------------------------------------------- -->
+<tr>
+<td>
+	Četvorocifreni heksadekadni broj
+</td>
+<td>
+	<tt class="regex">[\da-fA-F]{4}</tt>
+</td>
+<td>
+	<tt class="match">3</tt>&nbsp; 
+	<tt class="match">1</tt>&nbsp; 
+	<tt class="match">b</tt>&nbsp;
+	<tt class="match">F</tt>
+</td>
+</tr>
+<tr><td colspan="4"><hr></td></tr>
+
+<!-- ----------------------------------------------------------------- -->
+<tr>
+<td rowspan="2" class="topic">
+	Sidra
+</td>
+<td>
+	<tt class="regex">^a</tt>
+</td>
+<td>
+	U reči <tt class="string">aba ababa</tt> prepoznaje se samo prvo pojavljivanje <tt class="match">a</tt>
+</td>
+<td rowspan="2">
+Simbol <tt>^</tt> ograničava pronalaženje samo na početak niske koja se pretražuje<p>
+Simbol <tt>$</tt> ograničava pronalaženje samo na kraj niske koja se pretražuje
+</p></td>
+</tr>
+<tr>
+<td>
+	<tt class="regex">a$</tt>
+</td>
+<td>
+	U reči <tt class="string">aba ababa</tt> prepoznaje se samo krajnje pojavljivanje <tt class="match">a</tt>
+</td>
+</tr>
+<tr><td colspan="4"><hr></td></tr>
+
+
+
+<!-- ----------------------------------------------------------------- -->
+<tr>
+<td>
+	Vodeće i prateće beline
+</td>
+<td>
+	<tt class="regex">(?m)^[ \t]+|[ \t]+$</tt>
+</td>
+<td>
+	<tt class="string">&nbsp;  Zdravo svima  </tt> &nbsp;-&gt;&nbsp; <tt class="string">Zdravo svima</tt>
+</td>
+<td>
+Ovakve beline se izbacuju zamenom pojava datog regularnog izraza praznom rečju
+</td>
+</tr>
+<tr><td colspan="4"><hr></td></tr>
+
+
+<!-- ----------------------------------------------------------------- -->
+<tr>
+<td class="topic">
+	Granice reči
+</td>
+<td>
+	<tt class="regex">\bm</tt>
+</td>
+<td>
+	Drugo <tt class="match">m</tt> u niski <tt class="string">zanimljiva matematika</tt>
+</td>
+</tr>
+<tr><td colspan="4"><hr></td></tr>
+
+
+<!-- ----------------------------------------------------------------- -->
+<tr>
+<td class="topic">
+	Pozitivni preduvid
+</td>
+<td>
+	<tt class="regex">t(?=i)</tt>
+</td>
+<td>
+	
+	Drugo <tt class="match">t</tt> u reči <tt class="string">matematika</tt>
+</td>
+</tr>
+<tr><td colspan="4"><hr></td></tr>
+
+<!-- ----------------------------------------------------------------- -->
+<tr>
+<td class="topic">
+	Negativni preduvid
+</td>
+<td>
+	<tt class="regex">t(?!e)</tt>
+</td>
+<td>
+	
+	Drugo <tt class="match">t</tt> u reči <tt class="string">matematika</tt>
+</td>
+</tr>
+<tr><td colspan="4"><hr></td></tr>
+
+
+<!-- ----------------------------------------------------------------- -->
+<tr>
+<td>
+	E-mail adrese
+</td>
+<td>
+	<tt class="regex">\b[\w.-]+@[\w.-]+(\.[\w.-]+)*\.[A-Za-z]{2,4}\b</tt>
+</td>
+<td>
+	<tt class="match">peraperic@gmail.com</tt><p>
+	<tt class="match">ana.anic@goef.bg.ac.yu</tt></p><p>
+	<tt class="match">name-unkown@123_abc.info</tt>
+</p></td>
+</tr>
+<tr><td colspan="4"><hr></td></tr>
+
+<!-- ----------------------------------------------------------------- -->
+<tr>
+<td>
+	HTML linkovi
+</td>
+<td>
+	<tt class="regex">&lt;a[^&gt;]*&gt;(.*?)&lt;/a&gt;</tt>
+</td>
+<td>
+	<tt class="match">&lt;a href='http://www.google.com'&gt;Google&lt;/a&gt;</tt><br>
+</td>
+</tr>
+<tr><td colspan="4"><hr></td></tr>
+
+
+<!-- ----------------------------------------------------------------- -->
+<tr>
+<td>
+	XML etikete
+</td>
+<td>
+	<tt class="regex">&lt;([A-Z][A-Z0-9]*)[^&gt;]*&gt;(.*?)&lt;/\1&gt;</tt>
+</td>
+<td>
+	<tt class="match">&lt;tag attribute='value'&gt;Content&lt;/tag&gt;</tt>
+</td>
+</tr>
+<tr><td colspan="4"><hr></td></tr>
+
+<!-- ----------------------------------------------------------------- -->
+<tr>
+<td rowspan="3">
+	Brojevi u pokretnom zarezu
+</td>
+<td>
+	<tt class="regex">[-+]?[0-9]*\.?[0-9]*</tt>
+</td>
+<td>
+	<tt class="match">-3.2</tt>&nbsp;
+	<tt class="match">+4.</tt>&nbsp;
+	<tt class="match">.3</tt>&nbsp;
+	<tt class="match">-.7</tt>&nbsp;
+	<tt class="match">.</tt>&nbsp;
+	<tt class="match">+</tt>
+</td>
+</tr>
+
+<tr>
+<td>
+	<tt class="regex">[-+]?([0-9]*\.[0-9]+|[0-9]+)</tt> tj. <p> <tt class="regex">[-+]?[0-9]*\.?[0-9]+</tt>
+</p></td>
+<td>
+	<tt class="match">-3.2</tt>&nbsp;
+	<tt class="match">+4.</tt>&nbsp;
+	<tt class="match">.3</tt>&nbsp;
+	<tt class="match">-.7</tt>&nbsp;
+</td>
+</tr>
+
+<tr>
+<td>
+	<tt class="regex">[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?</tt>
+</td>
+<td>
+	<tt class="match">-3.2</tt>&nbsp;
+	<tt class="match">+4.</tt>&nbsp;
+	<tt class="match">.3</tt>&nbsp;
+	<tt class="match">-.7</tt>&nbsp;
+	<tt class="match">-3.1e10</tt>&nbsp;
+	<tt class="match">45.12E-23</tt>&nbsp;
+</td>
+</tr>
+
+<tr><td colspan="4"><hr></td></tr>
+
+
+<!-- ----------------------------------------------------------------- -->
+<tr>
+<td>
+	C++ komentari
+</td>
+<td>
+	<tt class="regex">//.*$</tt> 
+</td>
+<td>
+U niski	<tt class="string">i++; //uvecanje i za jedan</tt>
+ce biti prepoznato: <tt class="match">//uvecanje i za jedan</tt> 
+
+</td>
+</tr>
+<tr>
+</tr><tr><td colspan="4"><hr></td></tr>
+
+<!-- ----------------------------------------------------------------- -->
+<tr>
+<td>
+	C/C++ pretprocesorske direktive
+</td>
+<td>
+	<tt class="regex">^\s*(#.*)$</tt> 
+</td>
+<td>
+	<tt class="match">&nbsp;#include &lt;stdio.h&gt;</tt> 
+</td>
+</tr>
+<tr>
+</tr><tr><td colspan="4"><hr></td></tr>
+
+<!-- ----------------------------------------------------------------- -->
+<tr>
+<td>
+	C komentari
+</td>
+<td>
+	<tt class="regex">(?s)/\*.*?\*/</tt> 
+</td>
+<td>
+	<tt class="match">/*Ovo je komentar*/</tt>
+</td>
+<td>
+Opcija <tt class="regex">(?s)</tt> omogućava da tačka prepozanje i prelazak u novi red. Zbog 
+lenje zvezdice, nisu dozvoljeni ugneždeni komentari.
+</td>
+</tr>
+<tr>
+</tr><tr><td colspan="4"><hr></td></tr>
+
+<!-- ----------------------------------------------------------------- -->
+<tr>
+<td>
+	C niske karaktera
+</td>
+<td>
+	<tt class="regex">"(\\.|[^"\\])*?"</tt> ili <p>
+	<tt class="regex">"[^"\\]*(\\.[^"\\]*)*"</tt>
+</p></td>
+<td>
+	<tt class="match">"abc"</tt>&nbsp; <tt class="match">"a\nc"</tt>&nbsp; <tt class="match">"a\nb\"c"</tt>
+</td>
+<td>
+Drugi izraz je efikasniji
+</td>
+</tr>
+<tr>
+</tr><tr><td colspan="4"><hr></td></tr>
+
+
+<!-- ----------------------------------------------------------------- -->
+<tr>
+<td>
+	Datumi
+</td>
+<td>
+	<tt class="regex">(0[1-9]|[12][0-9]|3[01])([- /.])(0[1-9]|1[012])\2(19|20)\d\d</tt>
+
+</td>
+<td>
+	<tt class="match">01/01/1900</tt>
+	<tt class="match">31.12.2099</tt>
+	<tt class="match">31 04 2005</tt>
+</td>
+</tr>
+<tr>
+</tr><tr><td colspan="4"><hr></td></tr>
+
+
+<!-- ----------------------------------------------------------------- -->
+<tr>
+<td>
+	Linije koje sadrže neku od datih reči
+</td>
+<td>
+	<tt class="regex">^.*\b(prevodioci|interpretatori|pii)\b.*$</tt> ili <p>
+	<tt class="regex">^.*?\b(prevodioci|interpretatori|pii)\b.*$</tt>
+
+</p></td>
+<td>
+	<tt class="match">Programski prevodioci</tt><p>
+	<tt class="match">Kakvi su ovo interpretatori?</tt>
+</p></td>
+<td>
+Kod prvog izraza <tt>\1</tt> sadrži prvo pojavljivanje reči, a kod drugoga poslednje.
+</td>
+</tr>
+<tr>
+</tr><tr><td colspan="4"><hr></td></tr>
+
+<!-- ----------------------------------------------------------------- -->
+<tr>
+<td>
+	Linije koje sadrže svaku od datih reči
+</td>
+<td>
+	<tt class="regex">^(?=.*?\bcrvena\b)(?=.*?\bbela\b)(?=.*?\bplava\b).*$</tt> 
+</td>
+<td>
+	<tt class="match">Moje boje su crvena, plava i bela.</tt><p>
+</p></td>
+</tr>
+<tr>
+</tr><tr><td colspan="4"><hr></td></tr>
+
+<!-- ----------------------------------------------------------------- -->
+<tr>
+<td>
+	Uzastopne identične vrednosti u listi odvojenoj zarezima
+</td>
+<td>
+	<tt class="regex">(?&lt;=,|^)([^,]*)(,\1)+(?=,|$)</tt> 
+</td>
+<td>
+	<tt class="match">25,25,25</tt> u <p>
+	<tt class="string">15,32,48,25,25,25,53,18,18</tt>
+</p></td>
+</tr>
+<tr>
+</tr><tr><td colspan="4"><hr></td></tr>
+
+
+
+
+</tbody></table>
+
+
+
+</body></html>

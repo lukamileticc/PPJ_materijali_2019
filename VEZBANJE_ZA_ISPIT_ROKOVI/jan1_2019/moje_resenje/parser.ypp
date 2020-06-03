@@ -1,0 +1,176 @@
+%{
+#include <iostream>
+#include <cstdio>
+#include <cstdlib>
+#include <string>
+#include <vector>
+#include <map>
+
+using namespace std;
+
+
+extern int yylex();
+void yyerror(string s);
+
+map<string,vector<int>*> liste;
+map<string,int> promenljive;
+
+void stampaj_listu(vector<int>* l){
+	
+	cout << '[';
+	for(int it = 0; it != l->size();it++){	 	
+		cout << (*l)[it];
+		if(it != l->size() -1)
+			cout << ", ";
+}
+	cout << ']' <<  endl;
+	
+}
+
+void stampaj(int broj,int osnova){
+	if(osnova == 10)
+		printf("%d\n",broj);
+	else if(osnova == 16)
+		printf("%x\n",broj);
+	else if(osnova == 8)
+		printf("%o\n",broj);
+	else
+		yyerror("Nepodrzana osnova");
+}
+%}
+
+%union{
+	int vrednost;
+	string* ime;
+	vector<int> * elementi;
+}
+//PRIORITET I ASOC
+
+%left '|'
+%left '^'
+%left '&'
+%left VV MM
+%left '+''-'
+%left '*''/'
+%right '~' UMINUS
+
+%token INT PRINT LIST EQV
+%token<vrednost> BROJ
+%token<ime> ID ID_L
+
+%type<vrednost> IZRAZ
+%type<elementi> LISTA_IZRAZ VREDNOSTI
+
+
+%start program
+%%
+//gramtika
+program: program naredba {}
+		| naredba 		 {}
+		;
+naredba: INT ID '=' IZRAZ ';' { auto it = promenljive.find(*$2);
+								if(it != promenljive.end())
+									yyerror("Promenljiva vec deklarisana");
+
+								promenljive[*$2] = $4;
+								delete $2;
+							  }
+		| PRINT '(' IZRAZ ',' BROJ ')' ';' { if($5 != 8 && $5 != 10 && $5 != 16)
+											yyerror("Nepodrzana osnova");
+											
+										  stampaj($3,$5);
+										}
+		| PRINT '(' IZRAZ ')' ';' 		{ stampaj($3,10);} 
+		| INT ID ';'					{ if(promenljive.find(*$2) != promenljive.end())
+											yyerror("Promenljiva vec deklarisana");
+
+											promenljive[*$2] = 0;
+											delete $2;
+											}
+		| ID '=' IZRAZ ';' 				{ auto it = promenljive.find(*$1);
+											if(it == promenljive.end())
+												yyerror("Promenljiva nije deklarisana");
+											
+										  promenljive[*$1] = $3;
+										  delete $1;
+										}
+		| LIST ID_L '=' LISTA_IZRAZ ';' { auto it = liste.find(*$2);
+											if(it != liste.end())
+												yyerror("Vec deklarisana lista!");
+												
+											liste[*$2] = $4;
+											delete $2;
+										}
+		| PRINT '(' LISTA_IZRAZ ')' ';' { stampaj_listu($3);}
+		| IZRAZ EQV IZRAZ ';'		{ if($1 == $3)
+											cout << "True" << endl;
+										  else
+											cout << "False" << endl;
+										}
+		;
+IZRAZ: IZRAZ '+' IZRAZ  { $$ = $1 + $3;}
+	   | IZRAZ '-' IZRAZ { $$ = $1 - $3;}
+	   | IZRAZ '/' IZRAZ { $$ = $1 / $3;}
+	   | IZRAZ '*' IZRAZ { $$ = $1 * $3;}
+	   | IZRAZ '&' IZRAZ { $$ = $1 & $3;}
+	   | IZRAZ '|' IZRAZ { $$ = $1 | $3;}
+	   | IZRAZ '^' IZRAZ { $$ = $1 ^ $3;}
+	   | IZRAZ VV IZRAZ  { if($3 <= 0)
+							yyerror("drugi operand mora biti veci od nule!");
+							
+							$$ = $1 >> $3;}
+	   | IZRAZ MM IZRAZ	 { if($3 <= 0)
+							yyerror("drugi operand mora biti veci od nule!");
+					
+							$$ = $1 << $3;}
+	   | '~' IZRAZ		 { $$ = ~$2;}
+	   | '-' IZRAZ %prec UMINUS { $$ = -$2;}
+	   | '(' IZRAZ ')' { $$ = $2;}
+	   | BROJ 		   { $$ = $1;}
+	   | ID		{ auto it = promenljive.find(*$1);
+				  if(it == promenljive.end())
+					yyerror(*$1 +"Promenljiva nije definisana");
+					
+				  $$ = it->second;
+				  delete $1;
+				}
+	   | ID_L '[' BROJ ']'       { if(liste.find(*$1) == liste.end())
+									 yyerror(*$1 + " lista nije deklarisana");
+		
+								 $$ = (*liste[*$1])[$3];
+									delete $1;
+								 }
+	   ;
+
+LISTA_IZRAZ: '[' VREDNOSTI ']' { $$ = $2;}
+			| ID_L   { auto it = liste.find(*$1);
+				 	 	if(it == liste.end())
+							yyerror(*$1 +"Promenljiva nije definisana");
+					
+						  $$ = new vector<int>(*(liste[*$1]));
+						  delete $1;
+						}
+			;
+VREDNOSTI : VREDNOSTI ',' IZRAZ  {  $$ = $1; $$->push_back($3);}
+		  | IZRAZ		{ $$ = new vector<int>(); $$->push_back($1);}
+		  ;
+		  
+
+
+ 
+%%
+int main() {
+	
+	//yydebug = 0;
+	if(yyparse() == 0)
+		cout << "Sve je okej" << endl;
+	else
+		cout << "Sintaksna greska" << endl;
+
+	
+	return 0;
+}
+void yyerror(string s){
+	cerr << s << endl;
+	exit(EXIT_FAILURE);
+}

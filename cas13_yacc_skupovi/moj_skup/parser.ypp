@@ -1,0 +1,142 @@
+%{
+
+#include <iostream>
+#include <cstdlib>
+#include "skup.hpp"
+#include <map>
+#include <string>
+
+using namespace std;
+
+#define YYDEBUG 1
+extern FILE* yyin;
+extern int yylex();
+void yyerror(string s);
+void deinic();
+map<string,Skup*> promenljive;
+
+//definisemo globalni universe skup
+Skup* universe = nullptr;
+%}
+
+%union{
+	int vrednost;
+	string* ime;
+	Skup* elementi;
+}
+
+
+%nonassoc ':' '<'
+%left U 
+%left P R
+%right '~'
+
+%type<elementi> skup lista
+%token<vrednost> BROJ
+%token<ime> ID
+%token PRINT TT CHECK CARD UNIVERSE
+
+%start program
+
+%%
+
+//gramatika
+program: program naredba {}
+		| 	             {}
+		;
+naredba: ID '=' skup ';'  { auto trazen = promenljive.find(*$1);               
+								if(trazen != promenljive.end()){
+
+									delete trazen->second;
+								}
+								promenljive[*$1] = $3;
+								delete $1;
+ 						  }
+		| PRINT skup ';'  {$2->stampaj(); }
+		| CHECK BROJ ':' skup ';' { if($4->nadji($2))
+										cout << "true" << endl;
+										else
+										cout << "false" << endl;
+
+									delete $4;
+						 		  }
+		| CHECK skup '<' skup ';' { if($2->podskup($4))
+										cout << "true" << endl;
+									else
+									   	cout << "false" << endl;
+									delete $4;
+									delete $2;					
+								  }
+		| CARD skup ';'  { cout << $2->brojElemenata() << endl;
+								delete $2;  }
+		| UNIVERSE '='skup ';'	{	if(universe != nullptr)
+										delete universe;
+									universe = $3;
+								 }
+		;
+
+skup: '~' skup  {  if(universe == nullptr)
+						yyerror("Univerzalni skup nije definisan");
+					$$ = razlika(universe,$2);
+					 delete $2;
+				}
+	| skup U skup { $$ = unija($1,$3);
+					delete $1;
+					delete $3;
+					}
+	| skup P skup { $$ = presek($1,$3);
+					delete $1;
+					delete $3;
+					}
+	| skup R skup { $$ = razlika($1,$3);
+					delete $1;
+					delete $3;
+					}
+	| '{' lista '}' {$$ = $2; delete $2;}
+	| BROJ TT BROJ	{$$ = new Skup($1,$3);}
+	| ID	        { auto it = promenljive.find(*$1);
+						if(it == promenljive.end())
+							yyerror("Promenljiva nije definisana");
+					  $$ = new Skup(*(it->second));
+						//on vec postoji u mapi ,mislim na ovaj id tako da je suvisno cuvati ovaj pokazivac
+					  delete $1;
+					}
+	;
+
+lista: lista ',' BROJ { $$ =$1; $1->dodaj($3);}
+	   | BROJ		{ $$ = new Skup();
+					if($$ == NULL)
+						yyerror("Alokacija nije uspela");
+ $$->dodaj($1);}
+	   ;
+%%
+
+int main(int argc,char** argv){
+	
+	yydebug = 0; //ako hocemo promeni = 1
+	
+	yyin = fopen(argv[1],"r");
+	if(yyin == nullptr)
+		yyerror("file open failed");
+
+
+	if(yyparse() == 0)
+		cout << "Sve je okej" << endl;
+	else 
+		yyerror("Sintaksna greska!!");
+
+	fclose(yyin);
+	deinic();
+	exit(EXIT_SUCCESS);
+}
+void yyerror(string s){
+	cerr << s << endl;
+	exit(EXIT_FAILURE);
+}
+void deinic(){
+	
+	for(auto i = promenljive.begin();i != promenljive.end(); i++){
+		delete i->second;
+	}
+	delete universe;
+}

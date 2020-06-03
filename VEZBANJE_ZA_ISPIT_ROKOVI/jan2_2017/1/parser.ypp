@@ -1,0 +1,156 @@
+%{
+#include <iostream>
+#include <cstdlib>
+#include <vector>
+#include <map>
+using namespace std;
+
+
+extern int yylex();
+void yyerror(string s);
+
+map<string,vector<double>*> promenljive;
+
+void ispisi_vektor(const vector<double>* v){
+
+	cout << "[";
+		for(int i = 1; i < v->size();i++){
+			cout << (*v)[i];
+			if(i != v->size() -1)
+				cout << ", ";
+		}
+		
+	cout << "]" << endl;
+}
+vector<double>* saberi(const vector<double>* v1,const vector<double>* v2){
+	
+	if(v1->size() != v2->size())
+		yyerror("Nisu ista dimenzija");
+
+	vector<double>* novi = new vector<double>(*v1);
+	for(int i = 0; i < novi->size();i++)
+		(*novi)[i] += (*v2)[i];
+
+
+	return novi;
+}
+vector<double>* oduzmi(const vector<double>* v1,const vector<double>* v2){
+	
+	if(v1->size() != v2->size())
+		yyerror("Nisu ista dimenzija");
+
+	vector<double>* novi = new vector<double>(*v1);
+	for(int i = 0; i < novi->size();i++)
+		(*novi)[i] -= (*v2)[i];
+
+
+	return novi;
+}
+vector<double>* pomnozi_skalarom(int skalar,const vector<double>* v){
+	
+	vector<double>* novi = new vector<double>(*v);
+	for(int i = 0; i < novi->size();i++)
+		(*novi)[i] *= skalar;
+
+	return novi;
+}
+void deinic(){
+	auto i = promenljive.begin();
+	for(; i != promenljive.end();i++)
+		delete i->second;
+	
+}
+%}
+%union{
+	string* ime;
+	double vrednost;
+	vector<double>* elementi;
+}
+%left '+' '-'
+%left '*'
+%left '['
+
+%token<vrednost> BROJ
+%token<ime> ID;
+%type<elementi> izraz nabrajanje
+%token VECTOR DOD print 
+%start program
+%%
+//gramatika
+program: naredba ';' program		{}
+		|							{}
+		;
+naredba: VECTOR nizID             {}
+		| print izraz				{ispisi_vektor($2);}
+		| ID DOD izraz            {auto it = promenljive.find(*$1);
+									if(it == promenljive.end())
+										yyerror("Promenljiva nije deklarisana");
+
+									delete it->second;
+									promenljive[*$1] = $3;
+								  }
+		| izraz '[' BROJ ']'  		{ cout << (*$1)[$3] << endl;}
+		;
+nizID: nizID ',' ID				  {auto it = promenljive.find(*$3);
+									if(it != promenljive.end())
+										yyerror("Promenljive je vec definisana!");
+									
+									promenljive[*$3] = new vector<double>();
+									delete $3;
+								  } 
+	 | nizID ',' ID DOD izraz	  {auto it = promenljive.find(*$3);
+									if(it != promenljive.end())
+										yyerror("Promenljive je vec definisana!");
+
+								  promenljive[*$3] = $5;
+								  delete $3;
+								 }
+	 | ID DOD izraz 			{auto it = promenljive.find(*$1);
+									if(it != promenljive.end())
+										yyerror("Promenljive je vec definisana!");
+									
+								 promenljive[*$1] = $3;
+								 delete $1;
+								}	
+	 | ID						{auto it = promenljive.find(*$1);
+									if(it != promenljive.end())
+										yyerror("Promenljive je vec definisana!");
+									
+								promenljive[*$1] = new vector<double>();
+								delete $1;
+								}
+	 ;
+
+izraz: izraz '+' izraz			{$$ = saberi($1,$3); delete $1; delete $3;}
+	 |  izraz '-' izraz			{$$ = oduzmi($1,$3); delete $1; delete $3;}
+	 |  BROJ  '*' izraz			{$$ = pomnozi_skalarom($1,$3); delete $3;}
+	 | ID						 { auto it = promenljive.find(*$1);
+									if(it == promenljive.end())
+										yyerror("promenljive nije definisana!");
+
+									$$ = new vector<double>(*(it->second));
+									delete $1;
+							     }
+	 | '[' nabrajanje ']'	    {$$ = $2;}
+	 |'(' izraz ')'				{$$ = $2;}
+	 ;
+nabrajanje: nabrajanje ',' BROJ  { $$ =$1; $$->push_back($3);}
+		  | BROJ				 { $$ = new vector<double>(); $$->push_back(0); $$->push_back($1);}
+		  ;
+
+%%
+
+int main() {
+
+	if(yyparse() == 0)
+		cout << "All ok" << endl;
+	else 
+		cout << "Sintaksna greska" << endl;
+
+	deinic();
+	return 0;
+}
+void yyerror(string s){
+	cerr << s << endl;
+	exit(EXIT_FAILURE);
+}

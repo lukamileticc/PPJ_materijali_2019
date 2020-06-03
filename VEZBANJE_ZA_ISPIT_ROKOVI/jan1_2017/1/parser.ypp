@@ -1,0 +1,144 @@
+%{
+using namespace std;
+#include <iostream>
+#include <string>
+#include <cstdlib>
+#include "date.hpp"
+#include <map>
+extern int yylex();
+void yyerror(string s);
+
+map<string,Date*> promenljive;
+%}
+%union{
+	int vrednost;
+	Date* datum;
+	string* ime;
+}
+%type<vrednost> BR_DAY
+%type<datum> izraz 
+%token<ime> ID tip
+%token<vrednost> BROJ 
+%token DATE DOD print EUR ISO USA JEDNAKO
+%start program
+%%
+//gramatika
+program: naredba ';' program		{}
+		| 			  				{}
+		;
+naredba: DATE nizID
+		| ID DOD izraz				{ auto it = promenljive.find(*$1);
+									  if(it == promenljive.end())
+										yyerror("Promenljive nije deklarisana");
+
+									  delete it->second;
+									  promenljive[*$1] = $3;
+									  delete $1;
+									}
+		| print izraz				{ $2->ispisi_EUR(); }
+		| print izraz EUR			{ $2->ispisi_EUR(); }
+		| print izraz USA 			{ $2->ispisi_USA(); }
+		| print izraz ISO			{ $2->ispisi_ISO(); }
+		| izraz '<' izraz  			{ if(manje(*$1,*$3)) cout << "True" << endl; 
+									  else cout << "False" << endl;
+									  
+										delete $1;
+										delete $3;
+									}
+		| izraz '>' izraz           { if(vece(*$1,*$3)) cout << "True" << endl; 
+									  else cout << "False" << endl;
+									  
+										delete $1;
+										delete $3;
+									}
+		| izraz JEDNAKO izraz			{ if(jednako(*$1,*$3)) cout << "True" << endl; 
+									  else cout << "False" << endl;
+									  
+										delete $1;
+										delete $3;
+									}
+		| izraz '!'DOD izraz          { if(razlicito(*$1,*$4)) cout << "True" << endl; 
+									  else cout << "False" << endl;
+									  
+										delete $1;
+										delete $4;
+									}
+		
+		;
+nizID: ID					      {	auto it = promenljive.find(*$1);
+									if(it != promenljive.end())
+										 yyerror("Ne mozete dva puta deklarisati istu promenljvu");
+	
+									 promenljive[*$1] = new Date();
+									delete $1;
+								  }
+	  | ID DOD izraz			  { auto it = promenljive.find(*$1);
+									if(it != promenljive.end())
+										 yyerror("Ne mozete dva puta deklarisati istu promenljvu");
+
+									promenljive[*$1] = $3;
+									delete $1;
+								}
+	  | nizID ',' ID DOD izraz  {auto it = promenljive.find(*$3);
+									if(it != promenljive.end())
+										 yyerror("Ne mozete dva puta deklarisati istu promenljvu");
+
+									promenljive[*$3] = $5;	
+									delete $3;
+								}
+	  | nizID ',' ID			{auto it = promenljive.find(*$3);
+									if(it != promenljive.end())
+										 yyerror("Ne mozete dva puta deklarisati istu promenljvu");
+
+									 promenljive[*$3] = new Date();
+									delete $3;
+								}
+	  ;
+											//ovde fali provera da li je datum validan!
+izraz:  '\'' BROJ '.' BROJ '.' BROJ  '\'' { $$ = new Date($2,$4,$6); } 
+	 | '\'' BROJ '/' BROJ '/' BROJ '\''  { $$ = new Date($2,$4,$6); }
+	 | '\'' BROJ '-' BROJ '-' BROJ '\''	{ $$ = new Date($6,$4,$2); }
+	 | ID	izraz 				{auto it = promenljive.find(*$1);
+								if(it == promenljive.end())
+									yyerror(*$1 + " promenljive nije defisnisana");
+								Date tmp = *(it->second);
+								$$ = new Date(tmp.get_dan()+ $2->get_dan(),tmp.get_mesec() + $2->get_mesec(),tmp.get_godina()+$2->get_godina());
+								delete $1;
+							}
+	| '+' BR_DAY tip izraz    {	if(*$3 == "days") $$ = new Date($2 + $4->get_dan(),$4->get_mesec(),$4->get_godina());
+							 else if(*$3 == "months") $$ = new Date($4->get_dan(),$2 + $4->get_mesec(),$4->get_godina());
+							 else if(*$3 == "years") $$ = new Date($4->get_dan(),$4->get_mesec(),$2 + $4->get_godina());
+							 else yyerror("greska");
+							 }
+	| '-' BR_DAY tip izraz	{	if(*$3 == "days") $$ = new Date(-$2 + $4->get_dan(),$4->get_mesec(),$4->get_godina());
+							 else if(*$3 == "months") $$ = new Date(-$4->get_dan(),$2 + $4->get_mesec(),$4->get_godina());
+							 else if(*$3 == "years") $$ = new Date(-$4->get_dan(),$4->get_mesec(),$2 + $4->get_godina());
+							 else yyerror("greska");
+							 }
+	|       { $$ = new Date(0,0,0);}
+	 ;
+
+BR_DAY: BROJ 		{ $$ = $1; }
+		| tip '(' ID ')' {  auto it = promenljive.find(*$3);
+							if(it == promenljive.end())
+								yyerror("nije definisana promenljiva");
+						if(*$1 == "days") $$ = (it->second)->get_dan();
+						if(*$1 == "months") $$ = (it->second)->get_mesec();
+						if(*$1 == "years") $$ = (it->second)->get_godina();
+						}
+		;
+%%
+
+int main() {
+	
+	if(yyparse() == 0)
+		cout << "All ok" << endl;
+	else
+		yyerror("Sintaksna greska");
+
+	return 0;
+}
+void yyerror(string s){
+	cerr << s << endl;
+	exit(EXIT_FAILURE);
+}

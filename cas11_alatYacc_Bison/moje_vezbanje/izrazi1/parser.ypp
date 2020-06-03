@@ -1,0 +1,42 @@
+%{
+//OVO SE DIREKTNO PREPISUJE U PARSER.TAB.CPP
+#include <iostream>
+#include <cstdio>
+#include <cstdlib>
+#include <string>
+
+#define YYDEBUG 1
+
+using namespace std;
+
+extern int yylex();
+void yyerror(string s);
+
+%}
+
+%token BROJ
+%start e
+
+%%
+
+e : e '+' t
+	| t
+	;
+t: t '*' f
+	| f
+	;
+f: '(' e ')'
+	| BROJ
+	;
+%%
+int main() {
+	
+	if(yyparse() == 0)
+		cout << "Uparen je aritmeticki izraz !" << endl;
+	
+ 	return 0;
+}
+void yyerror(string s){
+	cerr << s << endl;
+	exit(EXIT_FAILURE);
+}
